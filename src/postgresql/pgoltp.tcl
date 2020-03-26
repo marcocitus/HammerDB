@@ -2025,7 +2025,7 @@ for {set d_id 1} {$d_id <= $DIST_PER_WARE } {incr d_id } {
 	pg_result $result -clear
 	return
 }
-proc do_tpcc { host port count_ware superuser superuser_password defaultdb db tspace user password ora_compatible pg_storedprocs num_vu } {
+proc do_tpcc { host port count_ware superuser superuser_password defaultdb db tspace user password pg_createuserdatabase ora_compatible pg_storedprocs num_vu } {
 set MAXITEMS 100000
 set CUST_PER_DIST 3000
 set DIST_PER_WARE 10
@@ -2060,7 +2060,9 @@ set lda [ ConnectToPostgres $host $port $superuser $superuser_password $defaultd
 if { $lda eq "Failed" } {
 error "error, the database connection to $host could not be established"
  } else {
-CreateUserDatabase $lda $db $tspace $superuser $user $password
+if { $pg_createuserdatabase eq "true" } {
+  CreateUserDatabase $lda $db $tspace $superuser $user $password
+}
 set result [ pg_exec $lda "commit" ]
 pg_result $result -clear
 pg_disconnect $lda
@@ -2142,7 +2144,7 @@ return
        }
    }
 }
-.ed_mainFrame.mainwin.textFrame.left.text fastinsert end "do_tpcc $pg_host $pg_port $pg_count_ware $pg_superuser $pg_superuserpass $pg_defaultdbase $pg_dbase $pg_tspace $pg_user $pg_pass $pg_oracompat $pg_storedprocs $pg_num_vu"
+.ed_mainFrame.mainwin.textFrame.left.text fastinsert end "do_tpcc $pg_host $pg_port $pg_count_ware $pg_superuser $pg_superuserpass $pg_defaultdbase $pg_dbase $pg_tspace $pg_user $pg_pass $pg_createuserdatabase $pg_oracompat $pg_storedprocs $pg_num_vu"
 	} else { return }
 }
 
@@ -2166,6 +2168,7 @@ set RAISEERROR \"$pg_raiseerror\" ;# Exit script on PostgreSQL (true or false)
 set KEYANDTHINK \"$pg_keyandthink\" ;# Time for user thinking and keying (true or false)
 set ora_compatible \"$pg_oracompat\" ;#Postgres Plus Oracle Compatible Schema
 set pg_storedprocs \"$pg_storedprocs\" ;#Postgres v11 Stored Procedures
+set pg_createuserdatabase \"$pg_createuserdatabase\" ;#Create user and database
 set host \"$pg_host\" ;# Address of the server hosting PostgreSQL
 set port \"$pg_port\" ;# Port of the PostgreSQL Server
 set user \"$pg_user\" ;# PostgreSQL user
